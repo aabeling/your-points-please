@@ -131,6 +131,15 @@ export class AppComponent {
 
   handleCommand(command :string) {
 
+    let changePlayerNameExp = new RegExp('^spiele.* (.+) heißt (.+)$','i');
+
+    let match = command.match(changePlayerNameExp);
+    if (match) {
+      let playerNo = this.understandAsNumber(match[1]);
+      if (playerNo) {
+        this.changePlayerName(playerNo, match[2]);
+      } // TODO else play failbuzzer
+    }
   }
 
   setLabelForListening() {
@@ -138,6 +147,23 @@ export class AppComponent {
       this.labelText = "Ja? Was denn?"      
     } else {
       this.labelText = "Ich höre..."
+    }
+  }
+
+  changePlayerName(playerNo : number, name : string) {
+    console.log(`change player: no: ${playerNo} new name: ${name}`);
+    // TODO
+  }
+
+  understandAsNumber(text : string) {
+    if (text.match(/\d+/)) {
+      return parseInt(text);
+    } else if (text.match(/eins/i)) {
+      return 1;
+    } else if (text.match(/zwei/i)) {
+      return 2;
+    } else {
+      return undefined;
     }
   }
 }
