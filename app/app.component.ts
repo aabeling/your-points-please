@@ -1,6 +1,6 @@
 import { Component, NgZone } from "@angular/core";
 import { SpeechRecognition, SpeechRecognitionOptions, SpeechRecognitionTranscription } from "nativescript-speech-recognition";
-import { TNSPlayer } from 'nativescript-audio';
+var sound = require("nativescript-sound");
 
 const TRIGGER = "schreib auf";
 
@@ -23,9 +23,8 @@ export class AppComponent {
   labelText: string = "Ich höre höflich weg.";
   isInCommandMode : boolean = false;
   recognizedText : string = "";
-  sounds: { "ding": any };
-  private player: TNSPlayer;
-
+  sounds: { "ding": any, "dong": any };
+  
   constructor(
     private speechRecognition : SpeechRecognition,
     private zone: NgZone) {
@@ -40,6 +39,9 @@ export class AppComponent {
         if (error == 7 || error == 6) {
           if (this.isInCommandMode) {
             this.zone.run(() => {
+              if (this.isInCommandMode) {
+                this.playStoppedListeningForCommand();
+              }
               this.isInCommandMode = false;
               this.setLabelForListening();
             });
@@ -49,28 +51,10 @@ export class AppComponent {
       }
     }
 
-    this.player = new TNSPlayer();
-    // You can pass a duration hint to control the behavior of other application that may
-    // be holding audio focus.
-    // For example: new  TNSPlayer(AudioFocusDurationHint.AUDIOFOCUS_GAIN_TRANSIENT);
-    // Then when you play a song, the previous owner of the
-    // audio focus will stop. When your song stops
-    // the previous holder will resume.
-    this.player.debug = true; // set true to enable TNSPlayer console logs for debugging.
-    this.player
-      .initFromFile({
-        audioFile: '~/sounds/ding.mp3', // ~ = app directory
-        loop: false,
-        completeCallback: function() {},
-        errorCallback: function() {}
-      })
-      .then(() => {
-        this.player.getAudioTrackDuration().then(duration => {
-          // iOS: duration is in seconds
-          // Android: duration is in milliseconds
-          console.log(`song duration:`, duration);
-        });
-      });
+    this.sounds = {
+      "ding": sound.create("~/sounds/ding.mp3"),
+      "dong": sound.create("~/sounds/dong.mp3")
+    }
   }
 
   public triggerListening() {
@@ -96,7 +80,7 @@ export class AppComponent {
       console.error(error);
       this.zone.run(() => {
         this.isInCommandMode = false;
-        this.setLabelForListening();
+        this.setLabelForListening();        
       });
       this.startListening();
     });
@@ -130,9 +114,19 @@ export class AppComponent {
       this.zone.run(() => {
         this.isInCommandMode = true;
         this.setLabelForListening();
+        this.playReadyToListenForCommand();      
       });
     }
     this.startListening();
+  }
+
+  playReadyToListenForCommand() {
+    console.log("ready to listen for command");
+    this.sounds['ding'].play();
+  }
+
+  playStoppedListeningForCommand() {  
+    this.sounds['dong'].play();
   }
 
   handleCommand(command :string) {
@@ -141,8 +135,7 @@ export class AppComponent {
 
   setLabelForListening() {
     if (this.isInCommandMode) {
-      this.labelText = "Ja? Was denn?"
-      this.player.play();
+      this.labelText = "Ja? Was denn?"      
     } else {
       this.labelText = "Ich höre..."
     }
