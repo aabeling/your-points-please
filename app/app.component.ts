@@ -7,7 +7,7 @@ const TRIGGER = "schreib auf";
 @Component({
   selector: "my-app",
   template: `
-    <ActionBar title="Game Counter" class="action-bar"></ActionBar>
+    <ActionBar title="your-points-please" class="action-bar"></ActionBar>
     <StackLayout>
       <Label text="Das Keyword ist 'Schreib auf'"></Label>
       <Button text="Lauschen" (tap)="triggerListening()"></Button>

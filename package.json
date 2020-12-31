@@ -1,10 +1,10 @@
 {
-	"description": "NativeScript Application",
+	"description": "uses speech recognition for handling points in a game",
 	"license": "SEE LICENSE IN <your-license-filename>",
 	"readme": "NativeScript Application",
 	"repository": "<fill-your-repository-here>",
 	"nativescript": {
-		"id": "de.banapple.gamecounter",
+		"id": "de.banapple.your_points_please",
 		"tns-android": {
 			"version": "6.5.3"
 		}
